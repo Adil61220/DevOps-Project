@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - NODE_ENV=production
+    restart: unless-stopped
+    volumes:
+      - build_files:/app/dist
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "1080:80"
+    volumes:
+      - build_files:/usr/share/nginx/html
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - app
+    restart: unless-stopped
+
+volumes:
+  build_files:
