@@ -5,6 +5,8 @@
 
 ### Slide 1: Project Overview 🚀
 
+![CI/CD Overview](https://www.devopsschool.com/blog/wp-content/uploads/2022/03/devops-tools.png)
+
 - Modern Todo Application Deployment
 - Full CI/CD Pipeline Implementation
 - Based on Open Source React Todo App by [maciekt07](https://github.com/maciekt07/TodoApp)
@@ -13,6 +15,8 @@
 ---
 
 ### Slide 2: Technology Stack 🛠️
+
+![Tech Stack](https://www.devopsschool.com/blog/wp-content/uploads/2022/03/jenkins-docker-ansible.png)
 
 **Infrastructure:**
 - Jenkins for CI/CD Pipeline
@@ -30,6 +34,8 @@
 
 ### Slide 3: Architecture Overview 📐
 
+![Architecture](https://www.devopsschool.com/blog/wp-content/uploads/2022/03/jenkins-ansible-architecture.png)
+
 ```mermaid
 flowchart TD
     A[GitHub Repository] -->|Clone| B[Jenkins Server]
@@ -44,6 +50,8 @@ flowchart TD
 
 ### Slide 4: CI/CD Pipeline 🔄
 
+![Jenkins Pipeline](https://www.jenkins.io/images/pipeline/realworld-pipeline-flow.png)
+
 1. **Source Control**
    - GitHub Repository: [DevOps-Project](https://github.com/Adil61220/DevOps-Project)
    - Automated Triggers on Push
@@ -57,6 +65,8 @@ flowchart TD
 ---
 
 ### Slide 5: Docker Implementation 🐳
+
+![Docker Architecture](https://docs.docker.com/engine/images/architecture.svg)
 
 **Application Container:**
 ```dockerfile
@@ -79,6 +89,8 @@ COPY dist /usr/share/nginx/html
 
 ### Slide 6: Ansible Automation ⚙️
 
+![Ansible Flow](https://www.ansible.com/hubfs/2017_Images/BrandGuidelines_Logos/RedHat/RH_Ansible_Automation_Platform.png)
+
 **Deployment Playbook:**
 ```yaml
 - hosts: worker
@@ -100,6 +112,8 @@ COPY dist /usr/share/nginx/html
 
 ### Slide 7: Application Features 📱
 
+![Todo App Interface](https://raw.githubusercontent.com/maciekt07/TodoApp/main/screenshots/app.png)
+
 **Todo Application:**
 - Task Management with Categories
 - Theme Customization Options
@@ -107,12 +121,11 @@ COPY dist /usr/share/nginx/html
 - Responsive Material Design
 - Local Storage Integration
 
-**Screenshot:**
-[Todo App Interface](https://raw.githubusercontent.com/maciekt07/TodoApp/main/screenshots/app.png)
-
 ---
 
 ### Slide 8: Production Setup 🔒
+
+![Docker Compose](https://docs.docker.com/compose/images/docker-compose.png)
 
 **Docker Compose Configuration:**
 ```yaml
@@ -136,6 +149,8 @@ services:
 
 ### Slide 9: Deployment Flow 🌊
 
+![Deployment Flow](https://www.devopsschool.com/blog/wp-content/uploads/2022/03/deployment-flow.png)
+
 1. **Development:**
    - Code Push to GitHub
    - Automated Pipeline Trigger
@@ -153,6 +168,8 @@ services:
 
 ### Slide 10: Future Roadmap 🗺️
 
+![Kubernetes](https://kubernetes.io/images/kubernetes-horizontal-color.png)
+
 **Upcoming Features:**
 - Kubernetes Integration for Scaling
 - Automated Testing Pipeline
@@ -163,6 +180,8 @@ services:
 ---
 
 ### Slide 11: Demo & Resources 🎮
+
+![Demo](https://raw.githubusercontent.com/maciekt07/TodoApp/main/screenshots/dark.png)
 
 **Live Demo:**
 - Application URL: http://worker-ip:1080
@@ -176,7 +195,8 @@ services:
 ---
 
 ### Thank You! 👋
-**Questions & Discussion**
+
+![Thank You](https://www.devopsschool.com/blog/wp-content/uploads/2022/03/thank-you.png)
 
 Contact:
 - Project Repository: [DevOps-Project](https://github.com/Adil61220/DevOps-Project)
