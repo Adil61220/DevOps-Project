@@ -1,0 +1,71 @@
+---
+- hosts: worker
+  become: true
+  tasks:
+    - name: Create app directory
+      file:
+        path: /opt/todo-app
+        state: directory
+        mode: '0755'
+
+    - name: Copy Docker images to worker nodes
+      copy:
+        src: "{{ item }}"
+        dest: "/opt/todo-app/"
+      with_items:
+        - todo-app.tar
+        - todo-nginx.tar
+
+    - name: Load Docker images
+      command: "docker load -i /opt/todo-app/{{ item }}"
+      with_items:
+        - todo-app.tar
+        - todo-nginx.tar
+
+    - name: Create Docker network
+      docker_network:
+        name: todo_network
+        state: present
+
+    - name: Stop and remove existing containers
+      docker_container:
+        name: "{{ item }}"
+        state: absent
+      with_items:
+        - todo-app
+        - todo-nginx
+
+    - name: Deploy app container
+      docker_container:
+        name: todo-app
+        image: todo-app:latest
+        state: started
+        networks:
+          - name: todo_network
+        env:
+          NODE_ENV: production
+        restart_policy: unless-stopped
+        volumes:
+          - build_files:/app/dist
+
+    - name: Deploy nginx container
+      docker_container:
+        name: todo-nginx
+        image: todo-nginx:latest
+        state: started
+        networks:
+          - name: todo_network
+        ports:
+          - "1080:80"
+        restart_policy: unless-stopped
+        volumes:
+          - build_files:/usr/share/nginx/html
+          - ./nginx.conf:/etc/nginx/conf.d/default.conf
+
+    - name: Clean up tar files
+      file:
+        path: "/opt/todo-app/{{ item }}"
+        state: absent
+      with_items:
+        - todo-app.tar
+        - todo-nginx.tar
