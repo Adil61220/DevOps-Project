@@ -3,42 +3,20 @@ pipeline {
 
     environment {
         REPO_URL = 'https://github.com/Adil61220/DevOps-Project.git'
-        APP_NAME = 'todo-app'
-        WORKSPACE_ARCHIVE = 'project.tar.gz'
     }
 
     stages {
-        stage('Checkout') {
+        stage('Verify Tools') {
             steps {
                 script {
                     try {
-                        echo "Checking out code from ${REPO_URL}"
-                        git branch: 'main', url: "${REPO_URL}"
-                        sh 'ls -la'
-                    } catch (Exception e) {
-                        error "Failed to checkout code: ${e.message}"
-                    }
-                }
-            }
-        }
-
-        stage('Prepare Deployment') {
-            steps {
-                script {
-                    try {
-                        echo "Creating project archive..."
-                        // Exclude unnecessary files from the archive
+                        echo "Verifying required tools..."
                         sh '''
-                            tar -czf ${WORKSPACE_ARCHIVE} \
-                                --exclude='.git' \
-                                --exclude='node_modules' \
-                                --exclude='dist' \
-                                --exclude='*.tar.gz' \
-                                .
+                            ansible --version
+                            git --version
                         '''
-                        echo "Project archive created successfully"
                     } catch (Exception e) {
-                        error "Failed to prepare deployment: ${e.message}"
+                        error "Required tools are missing: ${e.message}"
                     }
                 }
             }
@@ -50,10 +28,10 @@ pipeline {
                     try {
                         echo "Starting deployment using Ansible..."
                         sh '''
-                            ansible --version
+                            # Run playbook with verbose output
                             ansible-playbook -i inventory.ini deploy.yml -v
                         '''
-                        echo "Deployment completed successfully"
+                        echo "Deployment triggered successfully"
                     } catch (Exception e) {
                         error "Failed to deploy: ${e.message}"
                     }
@@ -64,16 +42,28 @@ pipeline {
 
     post {
         success {
-            echo "=== Deployment Successful ==="
-            echo "The application should now be accessible"
+            echo """
+            ===================================
+            ✅ Deployment Successful
+            ===================================
+            The application should now be accessible at:
+            http://worker:1080
+            
+            Please allow a few moments for the container to fully start.
+            """
         }
         failure {
-            echo "=== Deployment Failed ==="
-            echo "Please check the logs for details"
+            echo """
+            ===================================
+            ❌ Deployment Failed
+            ===================================
+            Please check:
+            1. Jenkins console output
+            2. Ansible logs
+            3. Worker node Docker logs
+            """
         }
         always {
-            echo "Cleaning up workspace..."
-            sh 'rm -f ${WORKSPACE_ARCHIVE}'
             cleanWs()
         }
     }

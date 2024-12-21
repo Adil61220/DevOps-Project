@@ -7,24 +7,52 @@
     container_name: todo-app
     network_name: todo_network
     host_port: 1080
+    repo_url: https://github.com/Adil61220/DevOps-Project.git
 
   tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+      when: ansible_os_family == "Debian"
+
+    - name: Install required packages
+      package:
+        name:
+          - docker.io
+          - python3
+          - python3-pip
+          - git
+        state: present
+
+    - name: Install Docker Python module
+      pip:
+        name: docker
+        state: present
+
+    - name: Ensure Docker service is running
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Add user to docker group
+      user:
+        name: "{{ ansible_user }}"
+        groups: docker
+        append: yes
+
     - name: Create application directory
       file:
         path: "{{ app_dir }}"
         state: directory
         mode: '0755'
 
-    - name: Copy project files
-      copy:
-        src: "{{ lookup('env', 'WORKSPACE_ARCHIVE') }}"
-        dest: "{{ app_dir }}/project.tar.gz"
-
-    - name: Extract project files
-      unarchive:
-        src: "{{ app_dir }}/project.tar.gz"
+    - name: Clone repository
+      git:
+        repo: "{{ repo_url }}"
         dest: "{{ app_dir }}"
-        remote_src: yes
+        version: main
+        force: yes
 
     - name: Remove old Docker containers and images
       block:
@@ -68,13 +96,12 @@
         env:
           NODE_ENV: production
 
-    - name: Clean up build artifacts
-      file:
-        path: "{{ item }}"
-        state: absent
-      with_items:
-        - "{{ app_dir }}/project.tar.gz"
-      ignore_errors: yes
+    - name: Wait for container to be ready
+      wait_for:
+        host: localhost
+        port: "{{ host_port }}"
+        timeout: 30
+        delay: 10
 
     - name: Verify deployment
       uri:
