@@ -7,48 +7,92 @@ pipeline {
         DOCKER_IMAGE_NGINX = 'todo-nginx:latest'
     }
 
+    tools {
+        nodejs 'NodeJS' // Name of the NodeJS installation in Jenkins
+    }
+
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main', url: "${REPO_URL}"
-                sh 'ls -la'  // Debug: List files after checkout
+                script {
+                    try {
+                        git branch: 'main', url: "${REPO_URL}"
+                        sh 'ls -la'
+                    } catch (Exception e) {
+                        error "Failed to checkout code: ${e.message}"
+                    }
+                }
             }
         }
 
         stage('Install Dependencies') {
             steps {
-                sh 'npm install'
+                script {
+                    try {
+                        sh '''
+                            node -v
+                            npm -v
+                            npm install
+                        '''
+                    } catch (Exception e) {
+                        error "Failed to install dependencies: ${e.message}"
+                    }
+                }
             }
         }
 
         stage('Build App') {
             steps {
-                sh 'npm run build'
+                script {
+                    try {
+                        sh 'npm run build'
+                    } catch (Exception e) {
+                        error "Failed to build app: ${e.message}"
+                    }
+                }
             }
         }
 
         stage('Build Docker Images') {
             steps {
-                // Build app image
-                sh 'docker build -t ${DOCKER_IMAGE_APP} -f Dockerfile .'
-                // Build nginx image
-                sh 'docker build -t ${DOCKER_IMAGE_NGINX} -f Dockerfile.nginx .'
+                script {
+                    try {
+                        // Build app image
+                        sh 'docker build -t ${DOCKER_IMAGE_APP} -f Dockerfile .'
+                        // Build nginx image
+                        sh 'docker build -t ${DOCKER_IMAGE_NGINX} -f Dockerfile.nginx .'
+                    } catch (Exception e) {
+                        error "Failed to build Docker images: ${e.message}"
+                    }
+                }
             }
         }
 
         stage('Save Docker Images') {
             steps {
-                // Save both images as tar files
-                sh 'docker save -o todo-app.tar ${DOCKER_IMAGE_APP}'
-                sh 'docker save -o todo-nginx.tar ${DOCKER_IMAGE_NGINX}'
-                archiveArtifacts artifacts: '*.tar', allowEmptyArchive: false
+                script {
+                    try {
+                        // Save both images as tar files
+                        sh 'docker save -o todo-app.tar ${DOCKER_IMAGE_APP}'
+                        sh 'docker save -o todo-nginx.tar ${DOCKER_IMAGE_NGINX}'
+                        archiveArtifacts artifacts: '*.tar', allowEmptyArchive: false
+                    } catch (Exception e) {
+                        error "Failed to save Docker images: ${e.message}"
+                    }
+                }
             }
         }
 
         stage('Deploy Using Ansible') {
             steps {
-                // Run ansible playbook
-                sh 'ansible-playbook -i inventory.ini deploy.yml'
+                script {
+                    try {
+                        sh 'ansible --version'
+                        sh 'ansible-playbook -i inventory.ini deploy.yml'
+                    } catch (Exception e) {
+                        error "Failed to deploy using Ansible: ${e.message}"
+                    }
+                }
             }
         }
     }
@@ -61,9 +105,8 @@ pipeline {
             echo 'Deployment Failed'
         }
         always {
-            // Clean up tar files
+            // Clean up tar files and workspace
             sh 'rm -f *.tar'
-            // Clean workspace
             cleanWs()
         }
     }
