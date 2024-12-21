@@ -27,6 +27,11 @@
         name: todo_network
         state: present
 
+    - name: Create Docker volume
+      docker_volume:
+        name: build_files
+        state: present
+
     - name: Stop and remove existing containers
       docker_container:
         name: "{{ item }}"
