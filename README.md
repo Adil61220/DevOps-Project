@@ -5,32 +5,53 @@ This project demonstrates a complete CI/CD pipeline for deploying a React-based 
 ## Architecture Overview
 
 ### CI/CD Pipeline Flow
-```mermaid
-graph LR
-    A[GitHub] -->|1. Clone| B[Jenkins]
-    B -->|2. Trigger| C[Ansible Controller]
-    C -->|3. Configure| D[Worker Node]
-    D -->|4. Build & Deploy| E[Docker Container]
-```
+
+1. **Source Code (GitHub)**
+   → Clone repository to Jenkins
+   
+2. **Jenkins Pipeline**
+   → Triggers Ansible deployment
+   
+3. **Ansible Controller**
+   → Configures worker node
+   
+4. **Worker Node**
+   → Builds and deploys Docker container
 
 ### Container Build Process
-```mermaid
-graph TD
-    A[Source Code] -->|1. Build Stage| B[Node.js Container]
-    B -->|2. npm install| C[Install Dependencies]
-    C -->|3. npm build| D[Build App]
-    D -->|4. Copy Build| E[Nginx Container]
-    E -->|5. Serve| F[Production App]
-```
+
+1. **Source Code**
+   → React application code
+   
+2. **Build Stage (Node.js Container)**
+   - Install Node.js dependencies
+   - Build React application
+   - Generate static files
+   
+3. **Production Stage (Nginx Container)**
+   - Copy built files
+   - Configure Nginx
+   - Serve application
 
 ### Container Architecture
-```mermaid
-graph TD
-    A[Docker Host] -->|Network| B[Docker Network]
-    B -->|Port 1080| C[Nginx Container]
-    C -->|Serve Static Files| D[React App]
-    D -->|Production Build| E[/usr/share/nginx/html]
-```
+
+1. **Docker Host (Worker Node)**
+   - Runs Docker daemon
+   - Manages containers and networks
+
+2. **Docker Network (todo_network)**
+   - Isolates application containers
+   - Enables container communication
+
+3. **Application Container (todo-app)**
+   - Based on Nginx Alpine
+   - Serves static files from /usr/share/nginx/html
+   - Exposes port 1080 externally → 80 internally
+
+4. **Data Flow**
+   - Client Request → Port 1080
+   - Nginx → Serves Static Files
+   - React App → Handles Client-side Logic
 
 ## Features
 
@@ -73,7 +94,7 @@ graph TD
 ├── deploy.yml             # Ansible deployment playbook
 ├── inventory.ini          # Ansible inventory configuration
 ├── nginx.conf             # Nginx server configuration
-���── src/                   # Application source code
+├── src/                   # Application source code
 ```
 
 ## Detailed Workflow
