@@ -4,140 +4,161 @@
 ---
 
 ### Slide 1: Project Overview 🚀
-![CI/CD Pipeline](https://miro.medium.com/max/1400/1*JbVknFJqX7EQEstOe4BnhQ.png)
 
 - Modern Todo Application Deployment
 - Full CI/CD Pipeline Implementation
-- Based on Open Source React Todo App
+- Based on Open Source React Todo App by [maciekt07](https://github.com/maciekt07/TodoApp)
+- Production-ready Containerized Solution
 
 ---
 
 ### Slide 2: Technology Stack 🛠️
-![Tech Stack](https://miro.medium.com/max/1400/1*N6gSyZBfF6Z_YQjZR4bh9A.png)
 
 **Infrastructure:**
-- Jenkins for CI/CD
+- Jenkins for CI/CD Pipeline
 - Docker for Containerization
-- Ansible for Configuration
-- Nginx for Web Server
+- Ansible for Configuration Management
+- Nginx for Production Web Server
 
 **Application:**
-- React.js Frontend
-- TypeScript
-- Material UI
-- PWA Support
+- React.js Frontend with TypeScript
+- Material UI Components
+- Progressive Web App (PWA)
+- Local Storage for Data Persistence
 
 ---
 
 ### Slide 3: Architecture Overview 📐
-![Architecture](https://miro.medium.com/max/1400/1*KYzXCqVvfY4YQ5pM9E6I8w.png)
 
 ```mermaid
 flowchart TD
-    A[GitHub] --> B[Jenkins]
-    B --> C[Ansible]
-    C --> D[Worker Node]
-    D --> E[Docker Container]
+    A[GitHub Repository] -->|Clone| B[Jenkins Server]
+    B -->|Trigger| C[Ansible Controller]
+    C -->|Configure & Deploy| D[Worker Node]
+    D -->|Run| E[App Container]
+    D -->|Run| F[Nginx Container]
+    F -->|Serve| G[Port 1080]
 ```
 
 ---
 
 ### Slide 4: CI/CD Pipeline 🔄
-![Pipeline](https://www.jenkins.io/images/pipeline-flow.png)
 
 1. **Source Control**
-   - GitHub Repository
-   - Version Control
-   - Code Management
+   - GitHub Repository: [DevOps-Project](https://github.com/Adil61220/DevOps-Project)
+   - Automated Triggers on Push
+   - Version Control with Git
 
 2. **Automation**
-   - Jenkins Pipeline
-   - Automated Builds
-   - Deployment Automation
+   - Jenkins Pipeline with Stages
+   - Automated Build & Deploy
+   - Error Handling & Notifications
 
 ---
 
 ### Slide 5: Docker Implementation 🐳
-![Docker](https://www.docker.com/wp-content/uploads/2021/09/docker-multi-stage.png)
 
+**Application Container:**
 ```dockerfile
-# Multi-stage build process
-FROM node:20-alpine as builder
-...
-FROM nginx:alpine
-...
+FROM node:20-alpine
+WORKDIR /app
+COPY package*.json ./
+RUN npm install
+COPY . .
+RUN npm run build
 ```
 
-- Multi-stage Builds
-- Optimized Images
-- Secure Configuration
+**Nginx Container:**
+```dockerfile
+FROM nginx:alpine
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY dist /usr/share/nginx/html
+```
 
 ---
 
 ### Slide 6: Ansible Automation ⚙️
-![Ansible](https://www.ansible.com/hubfs/Images/blog/ansible-pipeline.png)
 
+**Deployment Playbook:**
 ```yaml
 - hosts: worker
   tasks:
-    - name: Deploy application
-      docker_container:
-        name: todo-app
-        image: todo-app:latest
+    - name: Build application
+      docker_compose:
+        project_src: "{{ playbook_dir }}"
+        files:
+          - docker-compose.yml
+        state: present
 ```
 
+**Key Features:**
 - Infrastructure as Code
-- Automated Deployment
-- Configuration Management
+- Idempotent Deployments
+- Error Handling & Rollbacks
 
 ---
 
 ### Slide 7: Application Features 📱
-![Todo App](https://raw.githubusercontent.com/maciekt07/TodoApp/main/screenshots/app.png)
 
-- Task Management
-- Theme Customization
-- PWA Support
-- Responsive Design
-- Offline Functionality
+**Todo Application:**
+- Task Management with Categories
+- Theme Customization Options
+- PWA Support for Offline Access
+- Responsive Material Design
+- Local Storage Integration
+
+**Screenshot:**
+[Todo App Interface](https://raw.githubusercontent.com/maciekt07/TodoApp/main/screenshots/app.png)
 
 ---
 
-### Slide 8: Monitoring & Security 🔒
-![Monitoring](https://grafana.com/static/img/grafana/showcase.png)
+### Slide 8: Production Setup 🔒
 
-**Monitoring:**
-- Health Checks
-- Performance Metrics
-- Log Management
-
-**Security:**
-- Docker Security
-- Network Isolation
-- Access Control
+**Docker Compose Configuration:**
+```yaml
+services:
+  app:
+    build: .
+    volumes:
+      - ./dist:/app/dist
+  
+  nginx:
+    build:
+      context: .
+      dockerfile: Dockerfile.nginx
+    ports:
+      - "1080:80"
+    depends_on:
+      - app
+```
 
 ---
 
 ### Slide 9: Deployment Flow 🌊
-![Deployment](https://miro.medium.com/max/1400/1*0WrUVw8GG1R6JOV0IUyZOQ.png)
 
-1. Code Push
-2. Jenkins Build
-3. Docker Build
-4. Ansible Deploy
-5. Health Check
-6. Production Ready
+1. **Development:**
+   - Code Push to GitHub
+   - Automated Pipeline Trigger
+
+2. **Build Process:**
+   - Node.js Build
+   - Docker Image Creation
+
+3. **Deployment:**
+   - Ansible Configuration
+   - Container Orchestration
+   - Health Checks
 
 ---
 
 ### Slide 10: Future Roadmap 🗺️
-![Roadmap](https://miro.medium.com/max/1400/1*1kUhczYDfpkWXSFt0mI2dA.png)
 
 **Upcoming Features:**
-- Kubernetes Integration
-- Automated Testing
-- Performance Monitoring
-- Blue-Green Deployments
+- Kubernetes Integration for Scaling
+- Automated Testing Pipeline
+- Performance Monitoring Tools
+- Blue-Green Deployment Strategy
+- Database Integration
 
 ---
 
@@ -148,9 +169,9 @@ FROM nginx:alpine
 - GitHub Repository: [DevOps-Project](https://github.com/Adil61220/DevOps-Project)
 
 **Documentation:**
-- Project Documentation
-- Setup Guide
-- Troubleshooting Guide
+- [Project Documentation](./DOCUMENTATION.md)
+- [Setup Guide](./README.md)
+- [Workflow Diagram](./workflow.md)
 
 ---
 
@@ -158,9 +179,5 @@ FROM nginx:alpine
 **Questions & Discussion**
 
 Contact:
-- GitHub: [Project Repository](https://github.com/Adil61220/DevOps-Project)
-- Original App: [TodoApp](https://github.com/maciekt07/TodoApp)
-
----
-
-*Note: Replace image URLs with actual project-specific images when available*
+- Project Repository: [DevOps-Project](https://github.com/Adil61220/DevOps-Project)
+- Original Todo App: [TodoApp](https://github.com/maciekt07/TodoApp)
