@@ -3,8 +3,8 @@ pipeline {
 
     environment {
         REPO_URL = 'https://github.com/Adil61220/DevOps-Project.git'
-        DOCKER_IMAGE_APP = 'todo-app:latest'
-        DOCKER_IMAGE_NGINX = 'todo-nginx:latest'
+        APP_NAME = 'todo-app'
+        WORKSPACE_ARCHIVE = 'project.tar.gz'
     }
 
     stages {
@@ -12,6 +12,7 @@ pipeline {
             steps {
                 script {
                     try {
+                        echo "Checking out code from ${REPO_URL}"
                         git branch: 'main', url: "${REPO_URL}"
                         sh 'ls -la'
                     } catch (Exception e) {
@@ -21,57 +22,40 @@ pipeline {
             }
         }
 
-        stage('Build Docker Images') {
+        stage('Prepare Deployment') {
             steps {
                 script {
                     try {
-                        // Build app image with build stage
+                        echo "Creating project archive..."
+                        // Exclude unnecessary files from the archive
                         sh '''
-                            # Build the app image
-                            docker build -t ${DOCKER_IMAGE_APP} -f Dockerfile .
-                            
-                            # Create a temporary container to copy the build files
-                            docker create --name temp_container ${DOCKER_IMAGE_APP}
-                            
-                            # Copy the build files from the container
-                            docker cp temp_container:/app/dist ./dist
-                            
-                            # Remove the temporary container
-                            docker rm temp_container
-                            
-                            # Build nginx image with the build files
-                            docker build -t ${DOCKER_IMAGE_NGINX} -f Dockerfile.nginx .
+                            tar -czf ${WORKSPACE_ARCHIVE} \
+                                --exclude='.git' \
+                                --exclude='node_modules' \
+                                --exclude='dist' \
+                                --exclude='*.tar.gz' \
+                                .
                         '''
+                        echo "Project archive created successfully"
                     } catch (Exception e) {
-                        error "Failed to build Docker images: ${e.message}"
+                        error "Failed to prepare deployment: ${e.message}"
                     }
                 }
             }
         }
 
-        stage('Save Docker Images') {
+        stage('Deploy') {
             steps {
                 script {
                     try {
-                        // Save both images as tar files
-                        sh 'docker save -o todo-app.tar ${DOCKER_IMAGE_APP}'
-                        sh 'docker save -o todo-nginx.tar ${DOCKER_IMAGE_NGINX}'
-                        archiveArtifacts artifacts: '*.tar', allowEmptyArchive: false
+                        echo "Starting deployment using Ansible..."
+                        sh '''
+                            ansible --version
+                            ansible-playbook -i inventory.ini deploy.yml -v
+                        '''
+                        echo "Deployment completed successfully"
                     } catch (Exception e) {
-                        error "Failed to save Docker images: ${e.message}"
-                    }
-                }
-            }
-        }
-
-        stage('Deploy Using Ansible') {
-            steps {
-                script {
-                    try {
-                        sh 'ansible --version'
-                        sh 'ansible-playbook -i inventory.ini deploy.yml'
-                    } catch (Exception e) {
-                        error "Failed to deploy using Ansible: ${e.message}"
+                        error "Failed to deploy: ${e.message}"
                     }
                 }
             }
@@ -80,17 +64,16 @@ pipeline {
 
     post {
         success {
-            echo 'Deployment Successful'
+            echo "=== Deployment Successful ==="
+            echo "The application should now be accessible"
         }
         failure {
-            echo 'Deployment Failed'
+            echo "=== Deployment Failed ==="
+            echo "Please check the logs for details"
         }
         always {
-            // Clean up tar files, build directory and workspace
-            sh '''
-                rm -f *.tar
-                rm -rf dist
-            '''
+            echo "Cleaning up workspace..."
+            sh 'rm -f ${WORKSPACE_ARCHIVE}'
             cleanWs()
         }
     }

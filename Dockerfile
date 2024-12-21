@@ -15,18 +15,15 @@ COPY . .
 # Build the app
 RUN npm run build
 
-# Keep the container running for Jenkins to copy files
-CMD ["tail", "-f", "/dev/null"]
+# Production stage
+FROM nginx:alpine
 
-# Final stage
-FROM node:20-alpine
+# Copy built files from builder stage
+COPY --from=builder /app/dist /usr/share/nginx/html
 
-WORKDIR /app
+# Copy nginx configuration
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-COPY package*.json ./
-RUN npm ci
+EXPOSE 80
 
-COPY . .
-RUN npm run build
-
-CMD ["tail", "-f", "/dev/null"]
+CMD ["nginx", "-g", "daemon off;"]
