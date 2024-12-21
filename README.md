@@ -4,12 +4,32 @@ This project demonstrates a complete CI/CD pipeline for deploying a React-based 
 
 ## Architecture Overview
 
+### CI/CD Pipeline Flow
 ```mermaid
 graph LR
-    A[GitHub] --> B[Jenkins]
-    B --> C[Ansible]
-    C --> D[Worker Node]
-    D --> E[Docker Container]
+    A[GitHub] -->|1. Clone| B[Jenkins]
+    B -->|2. Trigger| C[Ansible Controller]
+    C -->|3. Configure| D[Worker Node]
+    D -->|4. Build & Deploy| E[Docker Container]
+```
+
+### Container Build Process
+```mermaid
+graph TD
+    A[Source Code] -->|1. Build Stage| B[Node.js Container]
+    B -->|2. npm install| C[Install Dependencies]
+    C -->|3. npm build| D[Build App]
+    D -->|4. Copy Build| E[Nginx Container]
+    E -->|5. Serve| F[Production App]
+```
+
+### Container Architecture
+```mermaid
+graph TD
+    A[Docker Host] -->|Network| B[Docker Network]
+    B -->|Port 1080| C[Nginx Container]
+    C -->|Serve Static Files| D[React App]
+    D -->|Production Build| E[/usr/share/nginx/html]
 ```
 
 ## Features
@@ -53,7 +73,67 @@ graph LR
 ├── deploy.yml             # Ansible deployment playbook
 ├── inventory.ini          # Ansible inventory configuration
 ├── nginx.conf             # Nginx server configuration
-└── src/                   # Application source code
+���── src/                   # Application source code
+```
+
+## Detailed Workflow
+
+### 1. Source Control (GitHub)
+- Code changes pushed to repository
+- Webhook triggers Jenkins pipeline
+- Branch: main
+
+### 2. Jenkins Pipeline
+```groovy
+Stages:
+1. Verify Tools
+   - Check Ansible
+   - Check Git
+
+2. Deploy with Ansible
+   - Run playbook
+   - Monitor execution
+```
+
+### 3. Ansible Controller
+```yaml
+Tasks:
+1. Setup Worker
+   - Install dependencies
+   - Configure Docker
+
+2. Build Process
+   - Clone repository
+   - Build Docker image
+   - Multi-stage build process
+
+3. Deployment
+   - Create network
+   - Run container
+   - Health checks
+```
+
+### 4. Docker Build
+```dockerfile
+# Stage 1: Build
+FROM node:20-alpine
+- Install dependencies
+- Build application
+
+# Stage 2: Production
+FROM nginx:alpine
+- Copy build files
+- Configure Nginx
+- Expose port 80
+```
+
+### 5. Container Deployment
+```yaml
+Container Configuration:
+- Image: todo-app:latest
+- Port: 1080:80
+- Network: todo_network
+- Environment: production
 ```
 
 ## Setup Instructions
@@ -101,26 +181,6 @@ graph LR
    ansible_become_pass=your_sudo_password
    ```
 
-## Deployment Workflow
-
-1. **Jenkins Pipeline Stages**:
-   ```groovy
-   Verify Tools → Deploy with Ansible
-   ```
-
-2. **Ansible Deployment Process**:
-   - Install required packages (Docker, Python, Git)
-   - Configure Docker service
-   - Clone repository
-   - Build Docker image
-   - Deploy container
-   - Verify deployment
-
-3. **Deployment Verification**:
-   - Health checks
-   - Port availability check
-   - HTTP response verification
-
 ## Usage
 
 1. **Trigger Deployment**:
@@ -160,9 +220,26 @@ graph LR
      docker ps -a
      ```
 
+4. **Build Issues**:
+   - Check multi-stage build logs:
+     ```bash
+     docker build --progress=plain .
+     ```
+   - Verify Node.js build:
+     ```bash
+     docker exec todo-app ls -la /usr/share/nginx/html
+     ```
+
 ## Contributing
 1. Fork the repository
 2. Create your feature branch
 3. Commit your changes
 4. Push to the branch
 5. Create a Pull Request
+
+## Credits
+- Original Todo Application: [TodoApp](https://github.com/maciekt07/TodoApp) by [maciekt07](https://github.com/maciekt07)
+- Live Demo of Original App: [react-cool-todo-app.netlify.app](https://react-cool-todo-app.netlify.app/)
+
+## License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
