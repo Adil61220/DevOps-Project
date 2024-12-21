@@ -1,6 +1,6 @@
 # DevOps Project - React Todo App Deployment
 
-This project demonstrates a complete CI/CD pipeline for deploying a React-based Todo application using Jenkins, Docker, and Ansible. The application is based on the open-source project [TodoApp](https://github.com/maciekt07/TodoApp) by [maciekt07](https://github.com/maciekt07).
+This project demonstrates a complete CI/CD pipeline for deploying a React-based Todo application using Jenkins, Docker, and Ansible. The application is based on the open-source project [TodoApp](https://github.com/maciekt07/TodoApp).
 
 ## Architecture Overview
 
@@ -257,10 +257,3 @@ Container Configuration:
 3. Commit your changes
 4. Push to the branch
 5. Create a Pull Request
-
-## Credits
-- Original Todo Application: [TodoApp](https://github.com/maciekt07/TodoApp) by [maciekt07](https://github.com/maciekt07)
-- Live Demo of Original App: [react-cool-todo-app.netlify.app](https://react-cool-todo-app.netlify.app/)
-
-## License
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
