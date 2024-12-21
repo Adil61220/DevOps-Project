@@ -7,10 +7,6 @@ pipeline {
         DOCKER_IMAGE_NGINX = 'todo-nginx:latest'
     }
 
-    tools {
-        nodejs 'NodeJS' // Name of the NodeJS installation in Jenkins
-    }
-
     stages {
         stage('Checkout') {
             steps {
@@ -25,42 +21,27 @@ pipeline {
             }
         }
 
-        stage('Install Dependencies') {
-            steps {
-                script {
-                    try {
-                        sh '''
-                            node -v
-                            npm -v
-                            npm install
-                        '''
-                    } catch (Exception e) {
-                        error "Failed to install dependencies: ${e.message}"
-                    }
-                }
-            }
-        }
-
-        stage('Build App') {
-            steps {
-                script {
-                    try {
-                        sh 'npm run build'
-                    } catch (Exception e) {
-                        error "Failed to build app: ${e.message}"
-                    }
-                }
-            }
-        }
-
         stage('Build Docker Images') {
             steps {
                 script {
                     try {
-                        // Build app image
-                        sh 'docker build -t ${DOCKER_IMAGE_APP} -f Dockerfile .'
-                        // Build nginx image
-                        sh 'docker build -t ${DOCKER_IMAGE_NGINX} -f Dockerfile.nginx .'
+                        // Build app image with build stage
+                        sh '''
+                            # Build the app image
+                            docker build -t ${DOCKER_IMAGE_APP} -f Dockerfile .
+                            
+                            # Create a temporary container to copy the build files
+                            docker create --name temp_container ${DOCKER_IMAGE_APP}
+                            
+                            # Copy the build files from the container
+                            docker cp temp_container:/app/dist ./dist
+                            
+                            # Remove the temporary container
+                            docker rm temp_container
+                            
+                            # Build nginx image with the build files
+                            docker build -t ${DOCKER_IMAGE_NGINX} -f Dockerfile.nginx .
+                        '''
                     } catch (Exception e) {
                         error "Failed to build Docker images: ${e.message}"
                     }
@@ -105,8 +86,11 @@ pipeline {
             echo 'Deployment Failed'
         }
         always {
-            // Clean up tar files and workspace
-            sh 'rm -f *.tar'
+            // Clean up tar files, build directory and workspace
+            sh '''
+                rm -f *.tar
+                rm -rf dist
+            '''
             cleanWs()
         }
     }
