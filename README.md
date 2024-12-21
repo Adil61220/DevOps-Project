@@ -1,135 +1,141 @@
-<p align="center">
-<img src="https://raw.githubusercontent.com/maciekt07/TodoApp/main/public/logo192.png" width="128px" />
-<h1>📝React.js Todo App</h1>
-</p>
+# DevOps Project - Todo App Deployment
 
-## [https://react-cool-todo-app.netlify.app/](https://react-cool-todo-app.netlify.app/)
+This project demonstrates a complete CI/CD pipeline for deploying a React-based Todo application using Jenkins, Docker, and Ansible. The application is based on the open-source project [TodoApp](https://github.com/maciekt07/TodoApp) by [maciekt07](https://github.com/maciekt07).
 
-[![Netlify Status](https://api.netlify.com/api/v1/badges/e3b07d34-f0da-4280-9076-fd40eea893c6/deploy-status)](https://app.netlify.com/sites/react-cool-todo-app/deploys)
-![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/maciekt07/TodoApp?color=%23b624ff)
-![GitHub last commit](https://img.shields.io/github/last-commit/maciekt07/TodoApp?color=%23b624ff)
-![GitHub License](https://img.shields.io/github/license/maciekt07/TodoApp?color=%23b624ff)
+## Original Project Features
 
-<p align="center">
-<img src="https://raw.githubusercontent.com/maciekt07/TodoApp/main/screenshots/iPhone%20Mockup%20black.png" width="400px" />
-</p>
+The Todo application includes several features from the original project:
+- 🔗 Share Tasks by Link or QR Code
+- 🎨 Color Themes with Light/Dark Mode
+- 📥 Import/Export Tasks
+- 📴 Progressive Web App (PWA)
+- 📱 Responsive Design
+- And many more features from the [original project](https://github.com/maciekt07/TodoApp)
 
-## 💻 Tech Stack
+## DevOps Workflow
 
-<ul style="display: flex; flex-direction: column; gap:10px;">
-  <li style="vertical-align: middle;">
-    <img src="https://go-skill-icons.vercel.app/api/icons?i=react" alt="react" width="24" style="vertical-align: middle; margin-right: 4px;" /> React
-  </li>
-    <li style="vertical-align: middle;">
-    <img src="https://go-skill-icons.vercel.app/api/icons?i=typescript" alt="typescript" width="20" style="vertical-align: middle;margin-right: 4px;" /> Typescript
-  </li>
-    <li style="vertical-align: middle;">
-    <img src="https://go-skill-icons.vercel.app/api/icons?i=vite" alt="vite" width="24" style="vertical-align: middle;margin-right: 4px;" /> Vite
-  </li>
-  <li style="vertical-align: middle;">
-    <img src="https://go-skill-icons.vercel.app/api/icons?i=vitest" alt="vitest" width="24" style="vertical-align: middle;margin-right: 4px;" /> Vitest
-  </li>
-  <li style="vertical-align: middle;">
-    <img src="https://go-skill-icons.vercel.app/api/icons?i=emotion" alt="emotion" width="24" style="vertical-align: middle;margin-right: 4px;" /> Emotion
-  </li>
-    <li style="vertical-align: middle;">
-    <img src="https://go-skill-icons.vercel.app/api/icons?i=mui" alt="mui" width="24" style="vertical-align: middle;margin-right: 4px;" /> Material UI (MUI)
-  </li>
-</ul>
+### Architecture
+```
+GitHub (Source) → Jenkins Pipeline → Docker Build → Ansible Deploy → Worker Node
+```
 
-## ⚡ Features
+### Components
+1. **Source Control**: GitHub
+   - Repository: [DevOps-Project](https://github.com/Adil61220/DevOps-Project)
+   - Based on: [TodoApp](https://github.com/maciekt07/TodoApp)
 
-### 🔗 Share Tasks by Link or QR Code
+2. **CI/CD Pipeline**: Jenkins
+   - Automated build and deployment process
+   - Multi-stage pipeline with error handling
+   - Artifact management
 
-Easily share your tasks with others using a link or QR code, with the option to download the QR code.
+3. **Containerization**: Docker
+   - Multi-container setup (App + Nginx)
+   - Volume management for persistence
+   - Custom networking between containers
 
-**[Example Link](https://react-cool-todo-app.netlify.app/share?task=N4IgJg9gdgpiBcAzAhgGwM4wDQgA4EspYwEAXAJwFdsQpkBbOeEAdRgCN19SYACAERgA3GKgi5GUUiBxgY6AMbl8uUvmgIQAYXIxkPXsl6pkUMIQDmvXMgt8A7twAWvAEp6FpAHQArdL0QIcl4FVHwYKS9eJ1JSXHR4AHpE+1SvAE8ISlJKdhgvBQh6FP0FJwB+IQBedgBZAGsoRABpAA0ASQAxAEEADgAyUiqAJgBmdH7kdgB9MtNYVCrEXRgtCDktBlwvIIsZEBh6CB98TQBGRAAWADZegFoL0cQFO+GABjewB6v2dn3CsTkTQAYnY12Gl0QiH2YH0TBA7whDzODwA7AAVM6jeCXS7wM7DLwAVlRAE4AFr-OEWILpBAAbVA+BI+NuqIJRMuZ1RN1Gb1GODojE0a3MUD2OEOx1OzAuROQRLuiBgb2hOABQRB1zABKhIAAvlgmSzhoKGPCWEF6vspSdzohRjBhv8IICQRDejA9fqALo4EzoUgAZWQIk0iMuyLRmOxuPxvS8pLeqMp+qAA&userName=Maciej)**
+4. **Configuration Management**: Ansible
+   - Automated deployment to worker nodes
+   - Infrastructure as Code
+   - Zero-downtime deployment
 
-<img src="https://raw.githubusercontent.com/maciekt07/TodoApp/main/screenshots/RecievedTask.png" width="300px" alt="Shared Task" />
+### Workflow Steps
+1. **Source Code Management**
+   - Code is pulled from GitHub
+   - Dependencies are installed
+   - Application is built
 
-### 🤖 AI Emoji Suggestions
+2. **Docker Image Creation**
+   - Two images are created:
+     - Application image (Node.js)
+     - Nginx image for serving static files
+   - Images are saved as tar files
 
-This uses `window.ai` which is an experimental feature that works only in dev version of Chrome with some flags enabled. [More info](https://afficone.com/blog/window-ai-new-chrome-feature-api/)
+3. **Ansible Deployment**
+   - Images are transferred to worker nodes
+   - Docker network and volumes are created
+   - Containers are deployed with proper configuration
 
-Code: [src/components/EmojiPicker.tsx](https://github.com/maciekt07/TodoApp/blob/main/src/components/EmojiPicker.tsx#L116)
+4. **Production Setup**
+   - Nginx serves the static files
+   - Application runs in production mode
+   - Automatic container restart on failure
 
-<img src="https://raw.githubusercontent.com/maciekt07/TodoApp/main/screenshots/emoji-ai.gif" alt="AI Emoji" width="360px" style="border-radius:12px" />
+## Project Structure
+```
+.
+├── Dockerfile           # Application container configuration
+├── Dockerfile.nginx     # Nginx container configuration
+├── Jenkinsfile         # CI/CD pipeline definition
+├── deploy.yml          # Ansible deployment playbook
+├── inventory.ini       # Ansible inventory configuration
+├── nginx.conf          # Nginx server configuration
+└── docker-compose.yml  # Local development setup
+```
 
-### 🎨 Color Themes
+## Requirements
 
-Users can choose several app color themes and choose between light and dark mode.
+### Jenkins Server
+- Jenkins with Pipeline plugin
+- Node.js and npm
+- Docker
+- Ansible
 
-<img src="https://raw.githubusercontent.com/maciekt07/TodoApp/main/screenshots/ColorThemes.png" width="200px" alt="Color Themes" />
+### Worker Node
+- Docker
+- Python 3
+- SSH access
 
-### 🗣️ Task Reading Aloud
+## Deployment
 
-Option to have tasks read aloud using the native `SpeechSynthesis` API, with a selection of voices to choose from.
+### 1. Jenkins Pipeline Setup
+1. Create a new Pipeline job in Jenkins
+2. Configure Git SCM with repository URL
+3. Use the provided Jenkinsfile
 
-<img src="https://raw.githubusercontent.com/maciekt07/TodoApp/main/screenshots/ReadAloud.png" width="260px" alt="Task Reading Aloud" />
+### 2. Worker Node Setup
+1. Ensure Docker is installed
+2. Configure SSH access
+3. Install Python 3 and Docker Python module
 
-### 📥 Import/Export Tasks
+### 3. Running the Pipeline
+1. Trigger the Jenkins pipeline
+2. Pipeline will:
+   - Build the application
+   - Create Docker images
+   - Deploy using Ansible
 
-Users can import and export tasks to/from JSON files. This feature allows users to back up their tasks or transfer them to other devices easily. [Example Import File](https://github.com/maciekt07/TodoApp/blob/main/example-import.json)
+### 4. Accessing the Application
+- The application will be available at `http://worker-ip:1080`
+- Nginx serves the static files
+- Application data persists through Docker volumes
 
-### 📴 Progressive Web App (PWA)
+## Configuration Files
 
-This app is a Progressive Web App (PWA), which means it can be installed on your device, used even when you're offline and behave like a normal application with shortcuts and badges.
+### Jenkinsfile
+```groovy
+pipeline {
+    agent any
+    stages {
+        stage('Checkout') { ... }
+        stage('Install Dependencies') { ... }
+        stage('Build App') { ... }
+        stage('Build Docker Images') { ... }
+        stage('Save Docker Images') { ... }
+        stage('Deploy Using Ansible') { ... }
+    }
+}
+```
 
-<img src="https://raw.githubusercontent.com/maciekt07/TodoApp/main/screenshots/pwaTaskBar.png" alt="taskbar" width="260px" />
+### Ansible Inventory
+```ini
+[worker]
+100.114.50.70 ansible_port=22 ansible_user=dev ansible_password=dev
+```
 
-### 🔄 Update Prompt
+## Credits
+- Original Todo Application: [TodoApp](https://github.com/maciekt07/TodoApp) by [maciekt07](https://github.com/maciekt07)
+- Live Demo of Original App: [react-cool-todo-app.netlify.app](https://react-cool-todo-app.netlify.app/)
 
-The app features a custom update prompt that notifies users when a new version is available, allowing for easy refresh to access the latest improvements.
-
-<!-- <img src="https://raw.githubusercontent.com/maciekt07/TodoApp/main/screenshots/UpdatePrompt.png" alt="update prompt" width="260px" /> -->
-
-<img src="screenshots/UpdatePrompt.png" alt="update prompt" width="260px" />
-
-### 🔎 Additional Features
-
-- **📦 Local and session storage**: Save tasks locally and retain form data using session storage.
-- **🌐 Native Intl Integration:** Adapts to your language, timezone, and date preferences using the native `Intl` API.
-- **🔍 Highlighted Links:** Automatically highlights links in task descriptions for easy identification.
-- **🌍 Browser Translation Support:** Seamlessly translate the entire page into different languages using your browser's translation feature, ensuring accessibility for users worldwide.
-- **🗂️ Customizable Categories:** Users can create and personalize task categories to suit their preferences.
-- **🗃️ Multi-Task Selection:** Option to select multiple tasks and perform actions on all of them at once.
-- **📱 Responsive Design:** Smooth experience across devices.
-- **😜 Custom Emojis**: The app features custom emojis and different emoji styles to choose from, including Apple, Facebook, Twitter, Google and Native.
-
-## 📷 Screenshots
-
-<img src="https://raw.githubusercontent.com/maciekt07/TodoApp/main/screenshots/ss1.png" width="300px" />
-
-<img src="https://raw.githubusercontent.com/maciekt07/TodoApp/main/screenshots/ss2.png" width="300px" />
-
-<img src="https://raw.githubusercontent.com/maciekt07/TodoApp/main/screenshots/ss3.png" width="300px" />
-
-<img src="https://raw.githubusercontent.com/maciekt07/TodoApp/main/screenshots/ss4.png" width="300px" />
-
-<img src="https://raw.githubusercontent.com/maciekt07/TodoApp/main/screenshots/ss5.png" width="300px" />
-
-<img src="https://raw.githubusercontent.com/maciekt07/TodoApp/main/screenshots/ss6.png" width="300px" />
-
-<img src="https://raw.githubusercontent.com/maciekt07/TodoApp/main/screenshots/sspc1.png" width="650px" />
-
-## 🚀 Performance
-
-<img src="https://raw.githubusercontent.com/maciekt07/TodoApp/main/screenshots/performance.png" width="600px" />
-
-## 👨‍💻 Installation
-
-To install and run the project locally, follow these steps:
-
-- Clone the repository: `git clone https://github.com/maciekt07/TodoApp.git`
-- Navigate to the project directory: `cd TodoApp`
-- Install the dependencies: `npm install`
-- Start the development server: `npm run dev`
-
-The app will now be running at [http://localhost:5173/](http://localhost:5173/).
-
-> [!TIP]
-> For mobile device testing, use `npm run dev:host` to preview the app on your local network.
-
-<a href="https://www.buymeacoffee.com/maciekt07" target="_blank">
-<img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=&slug=maciekt07&button_colour=1a1b27&font_colour=ffffff&font_family=Lato&outline_colour=ffffff&coffee_colour=FFDD00"></a>
-</a>
+## License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
